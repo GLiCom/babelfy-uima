@@ -59,29 +59,6 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name=PARAM_KEY, defaultValue="KEY")
 	private String key;
 
-
-	public static final String PARAM_CONFIDENCE = "confidence";
-	@ConfigurationParameter(name=PARAM_CONFIDENCE, defaultValue="0.0")
-	private double CONFIDENCE;
-	public static final String PARAM_SUPPORT = "support";
-	@ConfigurationParameter(name=PARAM_SUPPORT, defaultValue="0")
-	private int SUPPORT;
-	public static final String PARAM_TYPES = "types";
-	@ConfigurationParameter(name=PARAM_TYPES, defaultValue="")
-	private String TYPES;
-	public static final String PARAM_COREFERENCE_RESOLUTION = "coferenceResolution";
-	@ConfigurationParameter(name=PARAM_COREFERENCE_RESOLUTION, defaultValue="true")
-	private boolean COREFERENCE_RESOLUTION;
-	public static final String PARAM_SPOTTER = "spotter";
-	@ConfigurationParameter(name=PARAM_SPOTTER, defaultValue="Default")
-	private String SPOTTER;
-	public static final String PARAM_DISAMBIGUATOR = "disambiguator";
-	@ConfigurationParameter(name=PARAM_DISAMBIGUATOR, defaultValue="Default")
-	private String DISAMBIGUATOR;
-	public static final String PARAM_ALL_CANDIDATES = "allCandidates";
-	@ConfigurationParameter(name=PARAM_ALL_CANDIDATES, defaultValue="false", description="output all candidate annotations")
-	private boolean ALL_CANDIDATES;
-
 	private final int BATCH_SIZE = 10; 
 
 	public void process(JCas jCas) throws AnalysisEngineProcessException {
