@@ -1,0 +1,1 @@
+classpath*:edu/upf/glicom/uima/babelfy/types/*.xml

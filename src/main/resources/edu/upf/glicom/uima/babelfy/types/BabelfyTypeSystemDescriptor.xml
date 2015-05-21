@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>SpotlightTypeSystemDescriptor</name>
+  <description/>
+  <version>1.0</version>
+  <vendor/>
+      <types>
+        <typeDescription>
+          <name>edu.upf.glicom.uima.types.BabelfyResource</name>
+          <description/>
+          <supertypeName>uima.tcas.Annotation</supertypeName>
+          <features>
+            <featureDescription>
+              <name>babelSynsetID</name>
+              <description/>
+              <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+          <featureDescription>
+          <name>DBpediaURL</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+            <featureDescription>
+              <name>BabelNetURL</name>
+              <description/>
+              <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+              <name>score</name>
+              <description/>
+              <rangeTypeName>uima.cas.Double</rangeTypeName>
+            </featureDescription>
+        <featureDescription>
+          <name>coherenceScore</name>
+          <description/>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+            <featureDescription>
+              <name>globalScore</name>
+              <description/>
+              <rangeTypeName>uima.cas.Double</rangeTypeName>
+            </featureDescription>
+        <featureDescription>
+          <name>source</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+        </typeDescription>
+      <typeDescription>
+      <name>edu.upf.glicom.uima.types.TopBabelfyResource</name>
+      <description>top candidate (best ranked)</description>
+      <supertypeName>edu.upf.glicom.uima.types.BabelfyResource</supertypeName>
+    </typeDescription>
+  </types>
+  
+</typeSystemDescription>
