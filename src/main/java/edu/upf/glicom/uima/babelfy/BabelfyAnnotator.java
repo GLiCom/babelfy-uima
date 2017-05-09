@@ -7,6 +7,10 @@ import java.io.StringReader;
 import java.net.URLEncoder;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,24 +25,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.xml.sax.SAXException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-
 import edu.upf.glicom.uima.types.BabelfyResource;
 import edu.upf.glicom.uima.types.TopBabelfyResource;
 
 
 /**
- * Wrapper for the DbpediaSpotlight Annotate Web Service. This annotator assumes that the
- * web service endpoint specified in the configuration has already been started.
+ * Wrapper for the BabelFy Web Service. This annotator assumes that the
+ * web service endpoint specified in the configuration is running.
  * 
- * The annotator has no input size limitation, 
- * however it assumes the input is structured as one sentence at a line.
- * This is not a strict requirement though,
- * the annotator would still work fine as long as there are no lines containing extra-long text.
- *   
- * @author Mustafa Nural
+ * Long documents may be sent as several requests (because of limitations of HTTP GET
+ * requests). The split is done at newline boundaries in chunks of BATCH_SIZE (default 10) lines.
+ * If there are newlines within sentences it is possible that incomplete sentences
+ * will be sent to the service. Also note the disambiguation is done per chunk, not
+ * on the full document. 
  */
 public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 
@@ -48,7 +47,7 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 	 * The endpoint for Spotlight Annotate service
 	 */
 	public static final String PARAM_ENDPOINT = "endPoint";
-	@ConfigurationParameter(name=PARAM_ENDPOINT, defaultValue="https://babelfy.io/v1", description="The endpoint for Spotlight Annotate service")
+	@ConfigurationParameter(name=PARAM_ENDPOINT, defaultValue="https://babelfy.io/v1", description="The endpoint for the babelfy service")
 	private String babelfy_url;
 
 	public static final String PARAM_LANG = "lang";
@@ -69,8 +68,8 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 			return;
 		}
 
-		Client c = Client.create();
-
+		Client client = ClientBuilder.newClient();
+		
 		BufferedReader documentReader = new BufferedReader(new StringReader(documentText));
 		//Send requests to the server by dividing the document into sentence chunks determined by BATCH_SIZE.
 		int documentOffset = 0;
@@ -99,15 +98,15 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 				continue;
 			}
 
-			ClientResponse response = null;
+			String response = null;
 			boolean retry = false;
 			int retryCount = 0;
 			do{
 				try{
 
 					LOG.info("Sending request to the server");
-					WebResource r = 
-							c.resource(babelfy_url+"/disambiguate")
+					WebTarget target =
+							client.target(babelfy_url+"/disambiguate")
 							.queryParam("text", URLEncoder.encode(request, "UTF-8"))
 							.queryParam("lang", this.lang)
 							.queryParam("key", this.key)
@@ -121,11 +120,9 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 							//.queryParam("posTag", SPOTTER)
 							//.queryParam("extAIDA", SPOTTER)
 							;
-					LOG.info(r.getURI());
-					response =
-							r.type("application/x-www-form-urlencoded;charset=UTF-8")
-							.accept(MediaType.APPLICATION_JSON)
-							.get(ClientResponse.class);
+					LOG.info(target.getUri());
+					//response = target.request(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+					response = target.request(MediaType.APPLICATION_JSON).get(String.class);
 					retry = false;
 				} catch (Exception e){
 					//In case of a failure, try sending the request with a 2 second delay at least three times before throwing an exception
@@ -146,7 +143,8 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 			}while(retry);
 
 			LOG.debug("Server request completed. Writing to the index");
-			String jsonString = response.getEntity(String.class);
+			//String jsonString = response.readEntity(String.class);
+			String jsonString = response;
 			JSONArray jsonOutput = (JSONArray) JSONValue.parse(jsonString); 
 
 			/*
