@@ -155,8 +155,8 @@ public class BabelfyAnnotator extends JCasAnnotator_ImplBase {
 				BabelfyResource ann= new TopBabelfyResource(jCas);
 				JSONObject res = (JSONObject) resource;
 				JSONObject offsets = (JSONObject) res.get("charFragment");
-				ann.setBegin(((Long) offsets.get("start")).intValue());
-				ann.setEnd(((Long) offsets.get("end")).intValue()+1); // adjust offsets to Java style (open set)
+				ann.setBegin(((Long) offsets.get("start")).intValue() + documentOffset);
+				ann.setEnd(((Long) offsets.get("end")).intValue()+1 + documentOffset); // adjust offsets to Java style (open set)
 				ann.setBabelSynsetID((String) res.get("babelSynsetID"));
 				ann.setDBpediaURL((String) res.get("DBpediaURL"));
 				ann.setBabelNetURL((String) res.get("BabelNetURL"));
